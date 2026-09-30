@@ -12,6 +12,7 @@ const expressionImages = {
     sad: "/shark_captain_sad.png",
     angry: "/shark_captain_angry.png",
     surprised: "/shark_captain_surprised.png",
+    thinking: "/shark_captain_thinking.png",
 };
 
 function changeExpression(emotion) {
@@ -30,6 +31,10 @@ function changeExpression(emotion) {
 
         case "surprised":
             characterImage.src = "/images/surprised.png";
+            break;
+
+        case "thinking":
+            characterImage.src = "/images/thinking.png";
             break;
 
         default:
@@ -51,6 +56,7 @@ chatForm.addEventListener("submit", async (event) => {
     sendButton.disabled = true;
     sendButton.textContent ="送信中"
     messageParagraph.textContent = "サメ船長思考中……";
+    sharkImage.src = expressionImages["thinking"];
 
     try {
         const response = await fetch("/api/chat", {

@@ -45,7 +45,21 @@ app.post("/api/chat", async (c) => {
 
     console.log(result.response?.modelId);
     const { text } = result;
-    const data = JSON.parse(result.text);
+
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch (error) {
+      console.warn("AIがJSON形式で応答しませんでした。neutralとして処理します。");
+      console.warn("AI response:", text);
+
+      data = {
+        text: text,
+        emotion: "neutral",
+      };
+    }
+
     console.log("emotion:", data.emotion);
     
     const reply = data.text.trim();
