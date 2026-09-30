@@ -1,0 +1,97 @@
+:root {
+  background: #090b22;
+  line-height: 1.5;
+  font-family: "Helvetica Neue",
+   Arial,
+   "Hiragino Kaku Gothic ProN",
+   "Hiragino Sans",
+   "Noto Sans JP",
+   sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: 100%;
+  height: 100dvh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+main {
+  width: min(100%, 480px);
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  background: url("/background.png");
+  background-size: cover;
+}
+
+.yachiyo-area {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.yachiyo-image {
+  width: min(100%, 480px);
+  height: auto;
+  object-fit: contain;
+}
+
+.chat-area {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 32px 16px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.response-box {
+  background: rgb(7  10 32 / 34%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #ffffff;
+  padding: 16px 16px;
+  overflow-y: auto;
+  border-radius: 16px;
+}
+
+.chat-form {
+  display: flex;
+  gap: 16px;
+}
+
+.chat-form-input {
+  width: 100%;
+  min-height: 87px;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgb(7  10 32 / 34%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #ffffff;
+  resize: vertical;
+}
+
+.chat-form-button {
+  min-width: 87px;
+  border: 0;
+  border-radius: 32px;
+  color: #ffffff;
+  cursor: pointer;
+  background: rgb(255 255 255 / 34%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}

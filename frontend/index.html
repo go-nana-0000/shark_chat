@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="jp">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>サメチャット</title>
+  </head>
+  <body>
+    <main>
+      <section class="yachiyo-area">
+        <img class="shark-image" src="/shark_captain_neutral.png" />
+      </section>
+      <section class="chat-area">
+        <div class="response-box">
+          <p class="message" id="message">
+            サメ船長だ。何でも聞いてくれ。
+          </p>
+        </div>
+        <form class="chat-form" id="chatForm">
+          <textarea
+            class="chat-form-input"
+            placeholder="何でも話してね"
+            id="messageInput"
+          ></textarea>
+          <button class="chat-form-button" id="sendButton" type="submit">
+            送信
+          </button>
+        </form>
+      </section>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
