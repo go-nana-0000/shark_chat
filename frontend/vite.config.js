@@ -1,9 +1,18 @@
 import { defineConfig } from "vite";
 
+const useLocalWorker = false;
+
 export default defineConfig({
-    server: {
-        proxy: {
-            "/api": "http://localhost:3000",
-        },
+  base: useLocalWorker ? "/" : "/test02/",
+  
+  server: {
+    proxy: {
+      "/api": {
+        target: useLocalWorker
+          ? "http://localhost:8787"
+          : "https://shark-chat.kelso9929.workers.dev",
+        changeOrigin: true,
+      },
     },
+  },
 });

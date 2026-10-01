@@ -6,13 +6,16 @@ const messageParagraph = document.querySelector("#message");
 const sendButton = document.querySelector("#sendButton");
 const sharkImage = document.querySelector(".shark-image");
 
+sharkImage.src =
+  `${import.meta.env.BASE_URL}shark_captain_neutral.png`;
+
 const expressionImages = {
-    neutral: "/shark_captain_neutral.png",
-    happy: "/shark_captain_smile.png",
-    sad: "/shark_captain_sad.png",
-    angry: "/shark_captain_angry.png",
-    surprised: "/shark_captain_surprised.png",
-    thinking: "/shark_captain_thinking.png",
+  neutral: `${import.meta.env.BASE_URL}shark_captain_neutral.png`,
+  happy: `${import.meta.env.BASE_URL}shark_captain_smile.png`,
+  sad: `${import.meta.env.BASE_URL}shark_captain_sad.png`,
+  angry: `${import.meta.env.BASE_URL}shark_captain_angry.png`,
+  surprised: `${import.meta.env.BASE_URL}shark_captain_surprised.png`,
+  thinking: `${import.meta.env.BASE_URL}shark_captain_thinking.png`,
 };
 
 function changeExpression(emotion) {
@@ -58,8 +61,12 @@ chatForm.addEventListener("submit", async (event) => {
     messageParagraph.textContent = "サメ船長思考中……";
     sharkImage.src = expressionImages["thinking"];
 
+    const apiUrl = import.meta.env.DEV
+        ? "/api/chat"
+        : "https://shark-chat.kelso9929.workers.dev/api/chat";
+
     try {
-        const response = await fetch("/api/chat", {
+        const response = await fetch(apiUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

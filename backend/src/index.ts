@@ -37,8 +37,9 @@ app.post("/api/chat", async (c) => {
 
     console.log("API KEY:", process.env.OPENROUTER_API_KEY ? "設定済み" : "未設定");
     const result = await generateText({
-      model: openrouter("deepseek/deepseek-v4.1-flash"),
-      // model: openrouter("nvidia/nemotron-3-ultra-550b-a55b:free"),
+      // model: openrouter("deepseek/deepseek-v4.1-flash"),
+      // model: openrouter("moonshotai/kimi-k2.6"),
+      model: openrouter("nvidia/nemotron-3-ultra-550b-a55b:free"),
       system: systemPrompt,
       prompt: message,
     });
@@ -59,7 +60,8 @@ app.post("/api/chat", async (c) => {
         emotion: "neutral",
       };
     }
-
+      
+    // const data = JSON.parse(result.text);
     console.log("emotion:", data.emotion);
     
     const reply = data.text.trim();
