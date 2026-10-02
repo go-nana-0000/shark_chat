@@ -1,5 +1,7 @@
 import './style.css'
 
+import { backendUrl } from "./config.js";
+
 const chatForm = document.querySelector("#chatForm");
 const messageInput = document.querySelector("#messageInput");
 const messageParagraph = document.querySelector("#message");
@@ -60,10 +62,16 @@ chatForm.addEventListener("submit", async (event) => {
     sendButton.textContent ="送信中"
     messageParagraph.textContent = "サメ船長思考中……";
     sharkImage.src = expressionImages["thinking"];
+    const useLocalWorker = import.meta.env.VITE_USE_LOCAL_WORKER === "true";
+    const apiUrl = `${backendUrl}/api/chat`;
 
-    const apiUrl = import.meta.env.DEV
-        ? "/api/chat"
-        : "https://shark-chat.kelso9929.workers.dev/api/chat";
+    if (import.meta.env.DEV) {
+        console.log("front:local");
+        console.log("back:", apiUrl);
+    }
+    else {
+        console.log("front:cloud");
+    }
 
     try {
         const response = await fetch(apiUrl, {
