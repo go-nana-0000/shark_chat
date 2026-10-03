@@ -28,8 +28,8 @@ main {
   height: 100%;
   overflow: hidden;
   position: relative;
-  background: url("/background.png");
-  background-size: cover;
+  background: url("/background.png") center top / 100% auto no-repeat;
+  background-color: #C6C2DC;
 }
 
 .shark-area {
