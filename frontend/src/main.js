@@ -1,6 +1,9 @@
 import './style.css'
 
 import { backendUrl } from "./config.js";
+import { marked } from "marked";
+import DOMPurify from "dompurify";
+
 
 const chatForm = document.querySelector("#chatForm");
 const messageInput = document.querySelector("#messageInput");
@@ -89,7 +92,9 @@ chatForm.addEventListener("submit", async (event) => {
             return;
         }
 
-        messageParagraph.textContent = data.reply;
+        const html = await marked(data.reply);
+        messageParagraph.innerHTML = DOMPurify.sanitize(html);
+        // messageParagraph.textContent = data.reply;
         messageInput.value = "";
         console.log(data.emotion);
         sharkImage.src = expressionImages[data.emotion] ?? expressionImages.neutral;
