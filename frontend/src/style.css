@@ -24,8 +24,9 @@ body {
 }
 
 main {
-  width: min(100%, 480px);
-  height: 100%;
+  width: min(100vw, 50vh, 768px);
+  height: 100vh;
+  margin: 0 auto;
   overflow: hidden;
   position: relative;
   background: url("/background.png") center top / 100% auto no-repeat;
@@ -42,7 +43,7 @@ main {
 }
 
 .shark-image {
-  width: min(100%, 480px);
+  width: min(100%, 720px);
   height: auto;
   object-fit: contain;
 }
