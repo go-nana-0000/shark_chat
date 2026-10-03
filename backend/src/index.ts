@@ -102,7 +102,11 @@ app.post("/api/chat", async (c) => {
     let data;
 
     try {
-      data = JSON.parse(text);
+      const cleanedText = text
+        .replace(/^```(?:json)?\s*/, "")
+        .replace(/\s*```$/, "");
+
+      data = JSON.parse(cleanedText);
     } catch (error) {
       console.warn(
         "AIがJSON形式で応答しませんでした。neutralとして処理します。"
