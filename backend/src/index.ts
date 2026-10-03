@@ -33,7 +33,7 @@ app.get("/", (c) => {
 });
 
 app.post("/api/chat", async (c) => {
-  console.log("POST /api/chat を受信しました");
+  console.log("[CHAT] request received");
 
   const body = await c.req.json<ChatRequestBody>();
 
@@ -49,7 +49,7 @@ app.post("/api/chat", async (c) => {
 
   try {
     const apiKey = c.env.OPENROUTER_API_KEY;
-    console.log("Using model:", MODEL_NAME);
+    console.log("[CHAT] Using model:", MODEL_NAME);
 
     const response = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
@@ -79,7 +79,7 @@ app.post("/api/chat", async (c) => {
     if (!response.ok) {
       const errorText = await response.text();
 
-      console.error("OpenRouter API error:", errorText);
+      console.error("[CHAT] OpenRouter API error:", errorText);
 
       return c.json(
         { error: "AIの呼び出しに失敗しました" },
@@ -89,10 +89,10 @@ app.post("/api/chat", async (c) => {
 
     const result = await response.json();
 
-    const text =
-      result.choices?.[0]?.message?.content ?? "";
+    const text = result.choices?.[0]?.message?.content ?? "";
 
     if (!text) {
+      console.error("[CHAT] AI response content is empty");
       return c.json(
         { error: "AIからの応答を取得できませんでした" },
         500
@@ -109,9 +109,9 @@ app.post("/api/chat", async (c) => {
       data = JSON.parse(cleanedText);
     } catch (error) {
       console.warn(
-        "AIがJSON形式で応答しませんでした。neutralとして処理します。"
+        "[CHAT] No JSON response from AI. Processing as neutral."
       );
-      console.warn("AI response:", text);
+      console.warn("[CHAT] AI response:", text);
 
       data = {
         text: text,

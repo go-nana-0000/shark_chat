@@ -4,6 +4,25 @@
 	"main": "src/index.ts",
 	"compatibility_date": "2026-10-01",
 	"secrets": {
-		"required": ["OPENROUTER_API_KEY"]
+		"required": [
+			"OPENROUTER_API_KEY"
+		]
+	},
+	"routes": [
+		{
+		"pattern": "api.gojunana00.com",
+		"zone_name": "gojunana00.com",
+		"custom_domain": true,
+		"enabled": true,
+		"previews_enabled": false
+		}
+	],
+	"observability": {
+		"enabled": true,
+		"logs": {
+			"enabled": true,
+			"invocation_logs": true,
+			"persist": true
+		}
 	}
 }
