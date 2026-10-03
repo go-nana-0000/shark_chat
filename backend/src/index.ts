@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { systemPrompt } from "./systemPrompt.js";
+import { MODEL_NAME } from "./config.js";
 
 type Bindings = {
   OPENROUTER_API_KEY: string;
@@ -48,8 +49,7 @@ app.post("/api/chat", async (c) => {
 
   try {
     const apiKey = c.env.OPENROUTER_API_KEY;
-    const modelName = "nvidia/nemotron-3-ultra-550b-a55b:free";
-    console.log("Using model:", modelName);
+    console.log("Using model:", MODEL_NAME);
 
     const response = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
@@ -61,7 +61,7 @@ app.post("/api/chat", async (c) => {
           "X-OpenRouter-Title": "Shark Chat",
         },
         body: JSON.stringify({
-          model: modelName,
+          model: MODEL_NAME,
           messages: [
             {
               role: "system",
