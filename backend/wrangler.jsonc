@@ -10,11 +10,11 @@
 	},
 	"routes": [
 		{
-		"pattern": "api.gojunana00.com",
-		"zone_name": "gojunana00.com",
-		"custom_domain": true,
-		"enabled": true,
-		"previews_enabled": false
+			"pattern": "api.gojunana00.com",
+			"zone_name": "gojunana00.com",
+			"custom_domain": true,
+			"enabled": true,
+			"previews_enabled": false
 		}
 	],
 	"observability": {
@@ -24,5 +24,12 @@
 			"invocation_logs": true,
 			"persist": true
 		}
-	}
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "shark-chat-db",
+			"database_id": "d11b0601-ad70-4661-af7a-1b74b4bcfe3c",
+		}
+	]
 }

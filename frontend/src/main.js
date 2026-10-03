@@ -79,6 +79,7 @@ chatForm.addEventListener("submit", async (event) => {
     try {
         const response = await fetch(apiUrl, {
             method: "POST",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json",
             },
