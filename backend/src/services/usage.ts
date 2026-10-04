@@ -1,7 +1,10 @@
 // 利用回数の取得・制限判定・更新（D1）
 
-const RESET_TIME = 1 * 60 * 1000; // 1分
+// 定数設定
+const RESET_MIN = 3; // リセットまでの時間（分）
 const MAX_COUNT = 3;
+
+const RESET_TIME = RESET_MIN * 60 * 1000;
 
 type UsageRow = { count: number; reset_at: number | null };
 
@@ -21,8 +24,8 @@ export async function loadUsage(
         .bind(userId)
         .first<UsageRow>();
 
+    // リセット時刻を過ぎていたらカウントを0に戻す
     const now = Date.now();
-
     if (row && row.reset_at !== null && now >= row.reset_at) {
         await db
             .prepare("UPDATE usage SET count = 0, reset_at = NULL WHERE user_id = ?")
@@ -50,23 +53,23 @@ export async function loadUsage(
     return state;
 }
 
+// 利用回数が上限に達しているか判定
 export function isLimitReached(state: UsageState): boolean {
     return state.count >= MAX_COUNT;
 }
 
+// 利用回数の情報をログに出力
+export function logUsageInfo(state: UsageState): void {
+    const now = Date.now();
+    console.log("[USAGE] Now:", new Date(now).toISOString());
+    console.log("[USAGE] Rst:", state.resetAt ? new Date(state.resetAt).toISOString() : "null");
+}
+
+// 利用回数の上限に達した場合のログ出力
 export function logLimitReached(state: UsageState): void {
     const now = Date.now();
-    const wait =
-        state.resetAt && state.resetAt > now ? (state.resetAt - now) / 1000 : 0;
-
-    console.warn("[USAGE] Reached the limit messages in 1 minute.");
-    console.warn(
-        "[USAGE] Now:",
-        new Date(now).toISOString(),
-        "Reset at:",
-        state.resetAt ? new Date(state.resetAt).toISOString() : "null"
-    );
-    console.warn("[USAGE] Ready for use:", wait, "seconds later");
+    const wait = state.resetAt && state.resetAt > now ? (state.resetAt - now) / 1000 : 0;
+    console.warn("[USAGE] Reached the limit. Wait: ", wait, "[sec]");
 }
 
 // 利用回数を1増やす（初回・リセット後は1から開始）
@@ -77,28 +80,26 @@ export async function recordUsage(
 ): Promise<void> {
     const newResetAt = Date.now() + RESET_TIME;
 
+    // 初回またはリセット後は1から開始、リセット時刻を更新
     if (!state.exists || state.resetAt === null) {
         await db
             .prepare(
                 `INSERT INTO usage (user_id, count, reset_at)
-         VALUES (?, 1, ?)
-         ON CONFLICT(user_id)
-         DO UPDATE SET count = 1, reset_at = excluded.reset_at`
+                VALUES (?, 1, ?)
+                ON CONFLICT(user_id)
+                DO UPDATE SET count = 1, reset_at = excluded.reset_at`
             )
             .bind(userId, newResetAt)
             .run();
 
-        console.log("[USAGE] Count reset/start. Reset at:", new Date(newResetAt).toISOString());
+        console.log("[USAGE] Count reset/start.");
     } else {
+        // 2回目以降の利用（reset_at は初回から固定のまま更新しない）
         await db
-            .prepare(
-                `UPDATE usage
-         SET count = count + 1, reset_at = ?
-         WHERE user_id = ?`
-            )
-            .bind(newResetAt, userId)
+            .prepare(`UPDATE usage SET count = count + 1 WHERE user_id = ?`)
+            .bind(userId)
             .run();
 
-        console.log("[USAGE] Count increased. Reset at:", new Date(newResetAt).toISOString());
+        console.log("[USAGE] Count increased.");
     }
 }

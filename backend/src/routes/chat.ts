@@ -7,8 +7,9 @@ import { getOrCreateUserId } from "../services/user.js";
 import {
     loadUsage,
     isLimitReached,
-    logLimitReached,
+    logUsageInfo,
     recordUsage,
+    logLimitReached
 } from "../services/usage.js";
 import { callAI } from "../services/ai.js";
 import { parseAiResponse } from "../services/parseAiResponse.js";
@@ -23,6 +24,8 @@ chat.post("/", async (c) => {
 
         // 利用回数チェック
         const usage = await loadUsage(c.env.DB, userId);
+        logUsageInfo(usage);
+
         if (isLimitReached(usage)) {
             logLimitReached(usage);
             throw new ChatError("利用回数の上限に達しました", 429);
@@ -52,7 +55,7 @@ chat.post("/", async (c) => {
         if (error instanceof ChatError) {
             return c.json({ error: error.message }, error.status);
         }
-        console.error("AI呼び出しエラー:", error);
+        console.error("想定外エラー:", error);
         return c.json({ error: "AIの呼び出しに失敗しました" }, 500);
     }
 });
