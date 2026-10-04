@@ -4,6 +4,9 @@ import { systemPrompt } from "../systemPrompt.js";
 import { MODEL_NAME } from "../config.js";
 import { ChatError } from "../errors.js";
 
+const MAX_TOKEN = 1000;
+const TIMEOUT_SEC = 30;
+
 type OpenRouterResponse = {
     choices?: { message?: { content?: string } }[];
 };
@@ -21,10 +24,14 @@ export async function callAI(apiKey: string, message: string): Promise<string> {
         },
         body: JSON.stringify({
             model: MODEL_NAME,
+            session_id: "shark-chat",
+            max_tokens: MAX_TOKEN,
+            reasoning: { enabled: false },
             messages: [
                 { role: "system", content: systemPrompt },
                 { role: "user", content: message },
             ],
+            signal: AbortSignal.timeout(TIMEOUT_SEC*1000),
         }),
     });
 

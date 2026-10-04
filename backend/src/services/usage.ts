@@ -1,8 +1,8 @@
 // 利用回数の取得・制限判定・更新（D1）
 
 // 定数設定
-const RESET_MIN = 3; // リセットまでの時間（分）
-const MAX_COUNT = 3;
+const RESET_MIN = 10; // リセットまでの時間（分）
+const MAX_COUNT = 5;
 
 const RESET_TIME = RESET_MIN * 60 * 1000;
 
