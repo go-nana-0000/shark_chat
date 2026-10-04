@@ -5,12 +5,18 @@ import type { AppEnv, ChatRequestBody } from "../types.js";
 import { ChatError } from "../errors.js";
 import { getOrCreateUserId } from "../services/user.js";
 import {
-    loadUsage,
+    loadShortUsage,
     isLimitReached,
-    logUsageInfo,
-    recordUsage,
-    logLimitReached
-} from "../services/usage.js";
+    logShortUsageInfo,
+    recordShortUsage,
+    logLimitReached,
+    secondsUntilReset,
+} from "../services/shortUsage.js";
+import {
+    loadDailyCount,
+    isDailyLimitReached,
+    recordDailyUsage,
+} from "../services/dailyUsage.js";
 import { callAI } from "../services/ai.js";
 import { parseAiResponse } from "../services/parseAiResponse.js";
 
@@ -22,27 +28,37 @@ chat.post("/", async (c) => {
     try {
         const userId = getOrCreateUserId(c);
 
-        // 利用回数チェック
-        const usage = await loadUsage(c.env.DB, userId);
-        logUsageInfo(usage);
+        // 1日の利用回数チェック
+        const dailyCount = await loadDailyCount(c.env.DB, userId);
+        if (isDailyLimitReached(dailyCount)) {
+            throw new ChatError(
+                "今日はこれまでだ。すまんが、私も忙しいのでね。明日になったらまた話しかけてれ。",
+                429
+            );
+        }
 
+        // 短時間の利用回数チェック
+        const usage = await loadShortUsage(c.env.DB, userId);
+        logShortUsageInfo(usage);
+        const minutes = Math.max(1, Math.ceil(secondsUntilReset(usage) / 60));
         if (isLimitReached(usage)) {
             logLimitReached(usage);
-            throw new ChatError("利用回数の上限に達しました", 429);
+            throw new ChatError("ちょっと立て込んでいる。すまんが${minutes}分後にまた来てくれ。", 429);
         }
 
         // 入力チェック
         const body = await c.req.json<ChatRequestBody>();
         const message = body.message?.trim();
         if (!message) {
-            throw new ChatError("メッセージをセットしてください", 400);
+            throw new ChatError("メッセージをセットしてくれ。", 400);
         }
 
         // AI呼び出し
         const rawText = await callAI(c.env.OPENROUTER_API_KEY, message);
 
         // 利用回数更新
-        await recordUsage(c.env.DB, userId, usage);
+        await recordShortUsage(c.env.DB, userId, usage);
+        await recordDailyUsage(c.env.DB, userId, dailyCount);
 
         // 応答整形
         const { text, emotion } = parseAiResponse(rawText);
@@ -55,7 +71,7 @@ chat.post("/", async (c) => {
         if (error instanceof ChatError) {
             return c.json({ error: error.message }, error.status);
         }
-        console.error("想定外エラー:", error);
+        console.error("[CHAT] Unexpected error:", error);
         return c.json({ error: "AIの呼び出しに失敗しました" }, 500);
     }
 });

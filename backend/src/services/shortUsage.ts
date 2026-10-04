@@ -2,7 +2,7 @@
 
 // 定数設定
 const RESET_MIN = 10; // リセットまでの時間（分）
-const MAX_COUNT = 5;
+const MAX_COUNT = 10;
 
 const RESET_TIME = RESET_MIN * 60 * 1000;
 
@@ -15,7 +15,7 @@ export type UsageState = {
 };
 
 // 利用状況を取得。リセット時刻を過ぎていたらここでリセットする
-export async function loadUsage(
+export async function loadShortUsage(
     db: D1Database,
     userId: string
 ): Promise<UsageState> {
@@ -42,14 +42,6 @@ export async function loadUsage(
         resetAt: row?.reset_at ?? null,
     };
 
-    console.log(
-        "[USAGE] User:",
-        userId,
-        "Count:",
-        state.count,
-        "Reset at:",
-        state.resetAt ? new Date(state.resetAt).toISOString() : "null"
-    );
     return state;
 }
 
@@ -59,21 +51,27 @@ export function isLimitReached(state: UsageState): boolean {
 }
 
 // 利用回数の情報をログに出力
-export function logUsageInfo(state: UsageState): void {
+export function logShortUsageInfo(state: UsageState): void {
     const now = Date.now();
     console.log("[USAGE] Now:", new Date(now).toISOString());
     console.log("[USAGE] Rst:", state.resetAt ? new Date(state.resetAt).toISOString() : "null");
+}
+
+// リセットまでの残り秒数
+export function secondsUntilReset(state: UsageState): number {
+    if (state.resetAt === null) return 0;
+    return Math.max(0, Math.ceil((state.resetAt - Date.now()) / 1000));
 }
 
 // 利用回数の上限に達した場合のログ出力
 export function logLimitReached(state: UsageState): void {
     const now = Date.now();
     const wait = state.resetAt && state.resetAt > now ? (state.resetAt - now) / 1000 : 0;
-    console.warn("[USAGE] Reached the limit. Wait: ", wait, "[sec]");
+    console.warn("[USAGE] Reached the short limit. Wait: ", wait, "[sec]");
 }
 
 // 利用回数を1増やす（初回・リセット後は1から開始）
-export async function recordUsage(
+export async function recordShortUsage(
     db: D1Database,
     userId: string,
     state: UsageState
@@ -92,7 +90,7 @@ export async function recordUsage(
             .bind(userId, newResetAt)
             .run();
 
-        console.log("[USAGE] Count reset/start.");
+        console.log("[USAGE] Short count reset/start.");
     } else {
         // 2回目以降の利用（reset_at は初回から固定のまま更新しない）
         await db
@@ -100,6 +98,6 @@ export async function recordUsage(
             .bind(userId)
             .run();
 
-        console.log("[USAGE] Count increased.");
+        console.log("[USAGE] Short count +1: ", state.count+1, "/", MAX_COUNT);
     }
 }
