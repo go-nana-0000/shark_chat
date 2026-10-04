@@ -20,6 +20,7 @@ import {
 import { callAI } from "../services/ai.js";
 import { parseAiResponse } from "../services/parseAiResponse.js";
 
+const MAX_MESSAGE_LENGTH = 200;
 const chat = new Hono<AppEnv>();
 
 chat.post("/", async (c) => {
@@ -51,6 +52,12 @@ chat.post("/", async (c) => {
         const message = body.message?.trim();
         if (!message) {
             throw new ChatError("メッセージをセットしてくれ。", 400);
+        }
+        if (message.length > MAX_MESSAGE_LENGTH) {
+            throw new ChatError(
+                `メッセージは${MAX_MESSAGE_LENGTH}文字以内で入力してくれ。`,
+                400
+            );
         }
 
         // AI呼び出し
