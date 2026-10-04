@@ -23,34 +23,6 @@ const expressionImages = {
   thinking: `${import.meta.env.BASE_URL}shark_captain_thinking.png`,
 };
 
-function changeExpression(emotion) {
-    switch (emotion) {
-        case "happy":
-            characterImage.src = "/images/happy.png";
-            break;
-
-        case "sad":
-            characterImage.src = "/images/sad.png";
-            break;
-
-        case "angry":
-            characterImage.src = "/images/angry.png";
-            break;
-
-        case "surprised":
-            characterImage.src = "/images/surprised.png";
-            break;
-
-        case "thinking":
-            characterImage.src = "/images/thinking.png";
-            break;
-
-        default:
-            characterImage.src = "/images/neutral.png";
-            break;
-    }
-}
-
 chatForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -92,10 +64,8 @@ chatForm.addEventListener("submit", async (event) => {
             messageParagraph.textContent = data.error ?? "サメ船長からの返答を取得できませんでした。";
             return;
         }
-
-        const html = await marked(data.reply);
-        messageParagraph.innerHTML = DOMPurify.sanitize(html);
-        // messageParagraph.textContent = data.reply;
+        const html = await marked(data.reply, { breaks: true });
+        messageParagraph.innerHTML = DOMPurify.sanitize(html, { ALLOWED_TAGS: ["p", "br", "strong", "em", "b", "i"] });
         messageInput.value = "";
         console.log(data.emotion);
         sharkImage.src = expressionImages[data.emotion] ?? expressionImages.neutral;

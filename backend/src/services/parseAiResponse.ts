@@ -2,24 +2,27 @@
 
 import { VALID_EMOTIONS, type Emotion, type ParsedAiResponse } from "../types.js";
 
-// AIの出力(JSON想定)をパースする。JSONでなければ neutral として扱う
-export function parseAiResponse(text: string): ParsedAiResponse {
-    let data: { text?: string; emotion?: string };
+// 例: <emotion>happy</emotion>こんにちは！
+// 閉じタグが抜けていても拾えるように、</emotion> は省略可能にしている
+const EMOTION_TAG = /<emotion>\s*(\w+)\s*(?:<\/emotion>)?/i;
+const EMOTION_TAG_ALL = new RegExp(EMOTION_TAG.source, "gi");
 
-    try {
-        const cleaned = text
-            .replace(/^```(?:json)?\s*/, "")
-            .replace(/\s*```$/, "");
-        data = JSON.parse(cleaned);
-    } catch {
-        console.warn("[CHAT] No JSON response from AI. Processing as neutral.");
+function normalizeEmotion(value: string | undefined): Emotion {
+    const v = value?.toLowerCase();
+    return VALID_EMOTIONS.includes(v as Emotion) ? (v as Emotion) : "neutral";
+}
+
+// AIの出力から感情タグを取り出し、残りを本文として返す
+export function parseAiResponse(text: string): ParsedAiResponse {
+    const match = text.match(EMOTION_TAG);
+
+    if (!match) {
+        console.warn("[CHAT] No emotion tag in AI response. Processing as neutral.");
         console.warn("[CHAT] AI response:", text);
-        data = { text, emotion: "neutral" };
     }
 
-    const emotion = VALID_EMOTIONS.includes(data.emotion as Emotion)
-        ? (data.emotion as Emotion)
-        : "neutral";
-
-    return { text: data.text?.trim() ?? "", emotion };
+    return {
+        text: text.replace(EMOTION_TAG_ALL, "").trim(),
+        emotion: normalizeEmotion(match?.[1]),
+    };
 }
