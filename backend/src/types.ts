@@ -18,6 +18,8 @@ export const VALID_EMOTIONS = [
     "sad",
     "surprised",
     "thinking",
+    "embarrassed",
+    "scheming"
 ] as const;
 
 export type Emotion = (typeof VALID_EMOTIONS)[number];

@@ -21,6 +21,8 @@ const expressionImages = {
   angry: `${import.meta.env.BASE_URL}shark_captain_angry.png`,
   surprised: `${import.meta.env.BASE_URL}shark_captain_surprised.png`,
   thinking: `${import.meta.env.BASE_URL}shark_captain_thinking.png`,
+  embarrassed: `${import.meta.env.BASE_URL}shark_captain_embarrassed.png`,
+  scheming: `${import.meta.env.BASE_URL}shark_captain_scheming.png`,
 };
 
 chatForm.addEventListener("submit", async (event) => {
