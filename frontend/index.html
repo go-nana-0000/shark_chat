@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="jp">
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -29,6 +29,27 @@
         </form>
       </section>
     </main>
+    <div
+      id="notice-overlay"
+      class="notice-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="notice-title"
+    >
+      <div class="notice-card">
+        <h2 id="notice-title">サメチャット利用時の注意</h2>
+        <ul>
+          <li>入力内容は、OpenRouter経由で外部のMistral AIに送信されます。</li>
+          <li>氏名や住所等の個人情報は入力しないでください。</li>
+          <li>成人向けの内容は非対応のため入力しないでください。</li>
+          <li>
+            利用回数に制限があります(短時間の連続送信や、1日の上限を超えると、一時的に利用できなくなります)。
+          </li>
+        </ul>
+        <button id="notice-agree" type="button">同意して始める</button>
+      </div>
+    </div>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

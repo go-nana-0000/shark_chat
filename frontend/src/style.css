@@ -108,3 +108,27 @@ main {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
+
+.notice-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.notice-overlay.hidden {
+  display: none;
+}
+.notice-card {
+  background: #fff;
+  color: #222;
+  max-width: 420px;
+  max-height: 80vh;
+  overflow-y: auto;
+  margin: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+}

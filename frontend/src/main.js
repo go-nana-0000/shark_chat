@@ -6,10 +6,51 @@ import DOMPurify from "dompurify";
 
 
 const chatForm = document.querySelector("#chatForm");
-const messageInput = document.querySelector("#messageInput");
+const messageInput = document.getElementById("messageInput");
 const messageParagraph = document.querySelector("#message");
-const sendButton = document.querySelector("#sendButton");
+const sendButton = document.getElementById("sendButton");
 const sharkImage = document.querySelector(".shark-image");
+
+const agreeButton = document.getElementById("notice-agree");
+const overlay = document.getElementById("notice-overlay");
+
+const NOTICE_VERSION = "2026-10"; // 文面を変えて再同意してほしいときに更新
+const NOTICE_KEY = "noticeAgreedVersion";
+
+let agreed = hasAgreed();
+function hasAgreed() {
+  try {
+    return localStorage.getItem(NOTICE_KEY) === NOTICE_VERSION;
+  } catch {
+    return false; // localStorageが使えない環境では毎回表示する
+  }
+}
+
+function saveAgreement() {
+  try {
+    localStorage.setItem(NOTICE_KEY, NOTICE_VERSION);
+  } catch {
+    // 保存できなくても、そのセッション中は使えるようにする
+  }
+}
+
+if (hasAgreed()) {
+  overlay.classList.add("hidden");
+}
+
+function applyNoticeState() {
+  overlay.classList.toggle("hidden", agreed);
+  messageInput.disabled = !agreed;
+  sendButton.disabled = !agreed;
+}
+
+applyNoticeState();
+
+agreeButton.addEventListener("click", () => {
+  saveAgreement();
+  agreed = true;
+  applyNoticeState();
+});
 
 sharkImage.src =
   `${import.meta.env.BASE_URL}shark_captain_neutral.png`;
@@ -25,8 +66,13 @@ const expressionImages = {
   scheming: `${import.meta.env.BASE_URL}shark_captain_scheming.png`,
 };
 
+document.getElementById("notice-agree").addEventListener("click", () => {
+  overlay.classList.add("hidden");
+});
+
 chatForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+    if (!agreed) return; // 未同意なら何もしない
 
     const message = messageInput.value.trim();
 
@@ -39,7 +85,6 @@ chatForm.addEventListener("submit", async (event) => {
     sendButton.textContent ="送信中"
     messageParagraph.textContent = "サメ船長思考中……";
     sharkImage.src = expressionImages["thinking"];
-    const useLocalWorker = import.meta.env.VITE_USE_LOCAL_WORKER === "true";
     const apiUrl = `${backendUrl}/api/chat`;
 
     if (import.meta.env.DEV) {
@@ -78,4 +123,9 @@ chatForm.addEventListener("submit", async (event) => {
         sendButton.disabled = false;
         sendButton.textContent ="送信"
     }
+});
+
+agreeButton.addEventListener("click", () => {
+  saveAgreement();
+  overlay.classList.add("hidden");
 });
