@@ -1,12 +1,7 @@
 :root {
   background: #090b22;
   line-height: 1.5;
-  font-family: "Helvetica Neue",
-   Arial,
-   "Hiragino Kaku Gothic ProN",
-   "Hiragino Sans",
-   "Noto Sans JP",
-   sans-serif;
+  font-family: "Noto Sans JP", sans-serif;
 }
 
 * {
@@ -80,7 +75,7 @@ main {
   min-height: 0;
   overflow-y: auto;
 
-  background: rgb(7 10 32 / 34%);
+  background: rgba(25, 16, 56, 0.34);
   color: #ffffff;
   padding: 16px;
   border-radius: 16px;
@@ -96,23 +91,27 @@ main {
   width: 100%;
   min-height: 87px;
   padding: 8px;
-  border-radius: 8px;
-  background: rgb(7  10 32 / 34%);
+  border-radius: 16px;
+  background: rgba(17, 8, 51, 0.34);
   color: #ffffff;
   resize: vertical;
-  font-size: 16px;
+  font-size: 14px;
   font-family: inherit;
 }
 
 .chat-form-button {
   min-width: 87px;
   border: 0;
-  border-radius: 32px;
+  border-radius: 16px;
   color: #ffffff;
   cursor: pointer;
-  background: rgb(255 255 255 / 34%);
+  background: rgba(224, 58, 7, 0.34);
   font-size: 16px;
   font-family: inherit;
+}
+
+.chat-form-input::placeholder {
+  color: #56516d;
 }
 
 .notice-overlay {

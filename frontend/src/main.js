@@ -77,7 +77,7 @@ chatForm.addEventListener("submit", async (event) => {
     const message = messageInput.value.trim();
 
     if (message.length === 0) {
-        messageParagraph.textContent = "メッセージを入力してね！";
+        messageParagraph.textContent = "メッセージを入力してくれ。";
         return;
     }
 
