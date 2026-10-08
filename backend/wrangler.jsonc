@@ -31,5 +31,23 @@
 			"database_name": "shark-chat-db",
 			"database_id": "d11b0601-ad70-4661-af7a-1b74b4bcfe3c",
 		}
-	]
+	],
+	"env": {
+		"staging": {
+			"name": "shark-chat-staging",
+			"routes": [],   // ← 本番のドメインを引き継がないようにする
+			"d1_databases": [
+				{
+					"binding": "DB", // 本番と同じbinding名にする
+					"database_name": "shark-chat-db-staging",
+					"database_id": "e60f96a8-d73b-49d8-a170-1f78ff7eef22"
+				}
+			],
+			"secrets": {
+				"required": [
+					"OPENROUTER_API_KEY"
+				]
+			}
+		}
+	}
 }

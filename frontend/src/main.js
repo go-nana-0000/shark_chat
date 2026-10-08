@@ -87,12 +87,14 @@ chatForm.addEventListener("submit", async (event) => {
     sharkImage.src = expressionImages["thinking"];
     const apiUrl = `${backendUrl}/api/chat`;
 
-    if (import.meta.env.DEV) {
-        console.log("front:local");
-        console.log("back:", apiUrl);
-    }
-    else {
-        console.log("front:cloud");
+    if (backendUrl !== "https://api.gojunana00.com") {
+      if (import.meta.env.DEV) {
+          console.log("front:local");
+      }
+      else {
+          console.log("front:cloud");
+      }
+      console.log("back:", apiUrl);
     }
 
     try {
@@ -114,7 +116,6 @@ chatForm.addEventListener("submit", async (event) => {
         const html = await marked(data.reply, { breaks: true });
         messageParagraph.innerHTML = DOMPurify.sanitize(html, { ALLOWED_TAGS: ["p", "br", "strong", "em", "b", "i"] });
         messageInput.value = "";
-        console.log(data.emotion);
         sharkImage.src = expressionImages[data.emotion] ?? expressionImages.neutral;
 
     } catch {

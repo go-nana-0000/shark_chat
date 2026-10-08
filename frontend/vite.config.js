@@ -3,12 +3,11 @@ import { getBackendUrl } from "./shared/config.js";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const useLocalWorker = env.VITE_USE_LOCAL_WORKER === "true";
+  const target = env.VITE_BACKEND_TARGET;
 
-  const backendUrl = getBackendUrl(useLocalWorker);
-
+  const backendUrl = getBackendUrl(target);
   return {
-    base: useLocalWorker ? "/" : "/test02/",
+    base: target === "local" ? "/" : "/test02/",
 
     server: {
       proxy: {
