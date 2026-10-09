@@ -6,9 +6,9 @@ import DOMPurify from "dompurify";
 
 
 const chatForm = document.querySelector("#chatForm");
-const messageInput = document.getElementById("messageInput");
+const messageInput = document.querySelector('#messageInput');
 const messageParagraph = document.querySelector("#message");
-const sendButton = document.getElementById("sendButton");
+const sendButton = document.querySelector('#sendButton');
 const sharkImage = document.querySelector(".shark-image");
 
 const agreeButton = document.getElementById("notice-agree");
@@ -18,6 +18,16 @@ const NOTICE_VERSION = "2026-10"; // 文面を変えて再同意してほしい�
 const NOTICE_KEY = "noticeAgreedVersion";
 
 let agreed = hasAgreed();
+let sending = false;
+
+function updateSendButton() {
+  const isEmpty = messageInput.value.trim() === '';  // 空白・改行だけも「空」扱い
+  sendButton.disabled = !agreed || sending || isEmpty;
+}
+
+// 入力のたびに判定(IME変換中・貼り付け・削除も拾えます)
+messageInput.addEventListener('input', updateSendButton);
+
 function hasAgreed() {
   try {
     return localStorage.getItem(NOTICE_KEY) === NOTICE_VERSION;
@@ -34,14 +44,10 @@ function saveAgreement() {
   }
 }
 
-if (hasAgreed()) {
-  overlay.classList.add("hidden");
-}
-
 function applyNoticeState() {
   overlay.classList.toggle("hidden", agreed);
   messageInput.disabled = !agreed;
-  sendButton.disabled = !agreed;
+  updateSendButton();
 }
 
 applyNoticeState();
@@ -66,10 +72,6 @@ const expressionImages = {
   scheming: `${import.meta.env.BASE_URL}shark_captain_scheming.png`,
 };
 
-document.getElementById("notice-agree").addEventListener("click", () => {
-  overlay.classList.add("hidden");
-});
-
 chatForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!agreed) return; // 未同意なら何もしない
@@ -80,8 +82,8 @@ chatForm.addEventListener("submit", async (event) => {
         messageParagraph.textContent = "メッセージを入力してくれ。";
         return;
     }
-
-    sendButton.disabled = true;
+    sending = true;
+    updateSendButton();
     sendButton.textContent ="送信中"
     messageParagraph.textContent = "サメ船長思考中……";
     sharkImage.src = expressionImages["thinking"];
@@ -121,12 +123,9 @@ chatForm.addEventListener("submit", async (event) => {
     } catch {
         messageParagraph.textContent = "通信に失敗しました。時間をおいて再度お試しください。"
     } finally {
-        sendButton.disabled = false;
+        sending = false;
+        updateSendButton();
         sendButton.textContent ="送信"
     }
 });
 
-agreeButton.addEventListener("click", () => {
-  saveAgreement();
-  overlay.classList.add("hidden");
-});

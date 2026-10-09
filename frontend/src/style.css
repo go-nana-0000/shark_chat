@@ -137,3 +137,8 @@ main {
   border-radius: 8px;
   font-size: 0.8rem;
 }
+
+#sendButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
