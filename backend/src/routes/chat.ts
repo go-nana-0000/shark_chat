@@ -33,7 +33,7 @@ chat.post("/", async (c) => {
         const dailyCount = await loadDailyCount(c.env.DB, userId);
         if (isDailyLimitReached(dailyCount)) {
             throw new ChatError(
-                "今日はこれまでだ。すまんが、私も忙しいのでね。明日になったらまた話しかけてれ。",
+                "今日はこれまでだ。すまんが、俺も忙しいんだ。明日になったらまた話しかけてくれ。",
                 429
             );
         }
