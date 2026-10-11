@@ -1,5 +1,6 @@
 // /api/chat の処理の流れ
 
+
 import { Hono } from "hono";
 import type { AppEnv, ChatRequestBody } from "../types.js";
 import { ChatError } from "../errors.js";
@@ -19,7 +20,9 @@ import {
 } from "../services/dailyUsage.js";
 import { callAI } from "../services/ai.js";
 import { parseAiResponse } from "../services/parseAiResponse.js";
+import { GLOBAL_DAILY_LIMIT, USER_DAILY_LIMIT } from "../config.js";
 
+const GLOBAL_KEY = "__global__";
 const MAX_MESSAGE_LENGTH = 200;
 const chat = new Hono<AppEnv>();
 
@@ -29,13 +32,16 @@ chat.post("/", async (c) => {
     try {
         const userId = getOrCreateUserId(c);
 
-        // 1日の利用回数チェック
+        // 1日の利用回数チェック(全体)
+        const globalCount = await loadDailyCount(c.env.DB, GLOBAL_KEY);
+        if (isDailyLimitReached(globalCount, GLOBAL_DAILY_LIMIT)) {
+            throw new ChatError("今日はもう店じまいだ。また明日来てくれ。", 429);
+        }
+
+        // 1日の利用回数チェック(ユーザーごと)
         const dailyCount = await loadDailyCount(c.env.DB, userId);
-        if (isDailyLimitReached(dailyCount)) {
-            throw new ChatError(
-                "今日はこれまでだ。すまんが、俺も忙しいんだ。明日になったらまた話しかけてくれ。",
-                429
-            );
+        if (isDailyLimitReached(dailyCount, USER_DAILY_LIMIT)) {
+            throw new ChatError("今日はこれまでだ。すまんが、明日になったらまた話しかけてくれ。", 429);
         }
 
         // 短時間の利用回数チェック
@@ -67,8 +73,9 @@ chat.post("/", async (c) => {
         const rawText = await callAI(c.env.OPENROUTER_API_KEY, message);
 
         // 利用回数更新
+        await recordDailyUsage(c.env.DB, GLOBAL_KEY, globalCount, GLOBAL_DAILY_LIMIT);
+        await recordDailyUsage(c.env.DB, userId, dailyCount, USER_DAILY_LIMIT);
         await recordShortUsage(c.env.DB, userId, usage);
-        await recordDailyUsage(c.env.DB, userId, dailyCount);
 
         // 応答整形
         const { text, emotion } = parseAiResponse(rawText);

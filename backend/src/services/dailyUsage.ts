@@ -1,5 +1,5 @@
-// 1日あたりの利用制限（日本時間の0時にリセット）
-const DAILY_LIMIT = 30;
+// 1日の利用回数取得・制限判定・更新(D1)（日本時間の0時にリセット）
+
 const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
 
 // 日本時間の日付（例: "2026-10-05"）
@@ -9,25 +9,21 @@ function todayJst(): string {
 
 export async function loadDailyCount(
     db: D1Database,
-    userId: string
+    key: string
 ): Promise<number> {
     const row = await db
         .prepare("SELECT count FROM daily_usage WHERE user_id = ? AND day = ?")
-        .bind(userId, todayJst())
+        .bind(key, todayJst())
         .first<{ count: number }>();
 
     return row?.count ?? 0;
 }
 
-export function isDailyLimitReached(count: number): boolean {
-    return count >= DAILY_LIMIT;
+export function isDailyLimitReached(count: number, limit: number): boolean {
+    return count >= limit;
 }
 
-export async function recordDailyUsage(
-    db: D1Database,
-    userId: string,
-    count: number
-): Promise<void> {
+export async function recordDailyUsage(db: D1Database, key: string, count: number, limit: number): Promise<void>{
     await db
         .prepare(
             `INSERT INTO daily_usage (user_id, day, count)
@@ -35,8 +31,8 @@ export async function recordDailyUsage(
             ON CONFLICT(user_id, day)
             DO UPDATE SET count = count + 1`
         )
-        .bind(userId, todayJst())
+        .bind(key, todayJst())
         .run();
 
-    console.log("[USAGE] Daily count +1: ", count+1, "/", DAILY_LIMIT);
+    console.log("[USAGE]", key, "Daily count +1: ", count+1, "/", limit);
 }
