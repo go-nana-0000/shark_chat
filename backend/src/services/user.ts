@@ -16,7 +16,7 @@ export function getOrCreateUserId(c: Context<AppEnv>): string {
     setCookie(c, "user_id", userId, {
         httpOnly: true,
         sameSite: "lax",
-        secure: false, // ローカル開発用
+        secure: true,
         path: "/",
         maxAge: 60 * 60 * 24 * 365,
     });

@@ -44,11 +44,14 @@ chat.post("/", async (c) => {
         const minutes = Math.max(1, Math.ceil(secondsUntilReset(usage) / 60));
         if (isLimitReached(usage)) {
             logLimitReached(usage);
-            throw new ChatError("ちょっと立て込んでいる。すまんが${minutes}分後にまた来てくれ。", 429);
+            throw new ChatError(`ちょっと立て込んでいる。すまんが${minutes}分後にまた来てくれ。`, 429);
         }
 
         // 入力チェック
-        const body = await c.req.json<ChatRequestBody>();
+        const body = await c.req.json<ChatRequestBody>().catch(() => {
+            throw new ChatError("メッセージの形式が正しくないぞ。", 400);
+        });
+
         const message = body.message?.trim();
         if (!message) {
             throw new ChatError("メッセージをセットしてくれ。", 400);

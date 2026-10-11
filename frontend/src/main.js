@@ -113,6 +113,7 @@ chatForm.addEventListener("submit", async (event) => {
 
         if (!response.ok) {
             messageParagraph.textContent = data.error ?? "サメ船長からの返答を取得できませんでした。";
+            sharkImage.src = expressionImages["thinking"];
             return;
         }
         const html = await marked(data.reply, { breaks: true });
@@ -122,6 +123,7 @@ chatForm.addEventListener("submit", async (event) => {
 
     } catch {
         messageParagraph.textContent = "通信に失敗しました。時間をおいて再度お試しください。"
+        sharkImage.src = expressionImages["thinking"];
     } finally {
         sending = false;
         updateSendButton();
