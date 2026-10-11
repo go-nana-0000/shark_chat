@@ -35,7 +35,12 @@
 	"env": {
 		"staging": {
 			"name": "shark-chat-staging",
-			"routes": [],   // ← 本番のドメインを引き継がないようにする
+			"routes": [
+				{
+					"pattern": "api-staging.gojunana00.com",
+					"custom_domain": true
+				}
+			],   // ← 本番のドメインを引き継がないようにする
 			"d1_databases": [
 				{
 					"binding": "DB", // 本番と同じbinding名にする

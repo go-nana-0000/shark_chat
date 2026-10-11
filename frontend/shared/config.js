@@ -1,6 +1,6 @@
 const BACKENDS = {
   local: "http://localhost:8787",
-  staging: "https://shark-chat-staging.kelso9929.workers.dev",
+  staging: "https://api-staging.gojunana00.com",
   production: "https://api.gojunana00.com",
 };
 
